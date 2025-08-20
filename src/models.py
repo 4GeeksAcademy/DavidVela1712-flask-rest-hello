@@ -10,9 +10,9 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    post: Mapped["Post"] = relationship(back_populates="author")
-    comments: Mapped["Comment"] = relationship(back_populates="author")
-    likes: Mapped["Like"] = relationship(back_populates="author")
+    post: Mapped[list["Post"]] = relationship(back_populates="user")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="user")
+    likes: Mapped[list["Like"]] = relationship(back_populates="user")
 
 
     def serialize(self):
@@ -29,10 +29,10 @@ class Post(db.Model):
     url: Mapped[str] = mapped_column(nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    author: Mapped["User"] = relationship(back_populates="posts")
+    user: Mapped["User"] = relationship(back_populates="post")
     
-    comments: Mapped["Comment"] = relationship(back_populates="post")
-    likes: Mapped["Like"] = relationship(back_populates="post")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="post")
+    likes: Mapped[list["Like"]] = relationship(back_populates="post")
 
     def serialize(self):
         return {
@@ -49,8 +49,8 @@ class Comment(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
 
-    author: Mapped["User"] = relationship(back_populates="posts")
-    post: Mapped["Post"] = relationship(back_populates="posts")
+    user: Mapped["User"] = relationship(back_populates="comments")
+    post: Mapped["Post"] = relationship(back_populates="comments")
 
     def serialize(self):
         return {
@@ -66,8 +66,8 @@ class Like(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
 
-    author: Mapped["User"] = relationship(back_populates="posts")
-    post: Mapped["Post"] = relationship(back_populates="posts")
+    user: Mapped["User"] = relationship(back_populates="likes")
+    post: Mapped["Post"] = relationship(back_populates="likes")
 
     def serialize(self):
         return {
